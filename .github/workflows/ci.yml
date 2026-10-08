@@ -34,9 +34,22 @@ jobs:
           sh /tmp/rustup.sh -y --profile minimal
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
       - uses: subosito/flutter-action@v2
+        if: matrix.arch == 'x64'
         with:
           flutter-version: '3.47.6'
-          architecture: ${{ matrix.arch }}
+          architecture: x64
+      # The release archive manifest has no Linux ARM64 entry for this version.
+      # Flutter's source installer downloads the matching ARM64 Dart/engine.
+      - name: Install Flutter SDK from source on ARM64
+        if: matrix.arch == 'arm64'
+        shell: bash
+        run: |
+          flutterSdk="$RUNNER_TEMP/flutter-arm64"
+          git clone --depth 1 --branch 3.47.6 https://github.com/flutter/flutter.git "$flutterSdk"
+          echo "FLUTTER_ROOT=$flutterSdk" >> "$GITHUB_ENV"
+          echo "$flutterSdk/bin" >> "$GITHUB_PATH"
+      - name: Trust Flutter SDK ownership inside container
+        run: git config --global --add safe.directory "$FLUTTER_ROOT"
       - run: flutter pub get
       - run: dart format --output=none --set-exit-if-changed lib test example/lib
       - run: flutter analyze
