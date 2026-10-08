@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
-import 'package:rhttp/rhttp.dart' as rhttp;
+import 'package:native_dio_adapter_desktop/src/rhttp/rhttp.dart' as rhttp;
 import 'package:win_http/win_http.dart';
 
 /// Original header values exposed by native clients.

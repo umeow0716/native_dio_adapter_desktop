@@ -3,3 +3,6 @@ analyzer:
   exclude:
     - example/build/**
     - build/**
+    - lib/src/rhttp/**
+    - third_party/**
+    - linux/**

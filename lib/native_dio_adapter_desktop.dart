@@ -1,8 +1,9 @@
 /// Native Dio transports for Windows and Linux.
 library;
 
-export 'package:rhttp/rhttp.dart'
+export 'package:native_dio_adapter_desktop/src/rhttp/rhttp.dart'
     show
+        Rhttp,
         ClientSettings,
         ProxySettings,
         RedirectSettings,

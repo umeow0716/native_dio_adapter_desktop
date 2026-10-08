@@ -25,8 +25,10 @@ dependencies:
 ```
 
 Requires Flutter >=3.35.0 and Dart >=3.9.0. Install a current stable Rust toolchain
-via [rustup](https://rustup.rs/) on build machines: the transitive rhttp plugin
-compiles native Rust code. End users do **not** need Rust installed.
+via [rustup](https://rustup.rs/) on **Linux build machines only**. The Linux-only
+FFI plugin compiles the vendored rhttp backend. Windows uses system WinHTTP;
+Android/iOS/macOS do not build or bundle this Rust library. End users do **not**
+need Rust installed.
 
 ## Use
 
@@ -42,8 +44,8 @@ dio.close();
 ```
 
 Linux initialization is automatic and asynchronous before the first request;
-you don't need to call `Rhttp.init()`. If your app already initializes rhttp,
-pass `initializeRhttp: false` and finish that initialization before sending requests. Adapter and native clients are created
+you don't need to call `Rhttp.init()`. To initialize the bundled backend yourself, call the `Rhttp.init()` exported
+by this package, then pass `initializeRhttp: false` and finish that initialization before sending requests. Adapter and native clients are created
 lazily. Closing an unused adapter doesn't initialize either transport.
 
 The public platform adapters are `WinHttpAdapter` and `RhttpAdapter`. The
@@ -152,3 +154,8 @@ The source in this repository is **MIT**; see [LICENSE](LICENSE).
 Dependencies keep their own licenses: `rhttp` is MIT and `win_http` 0.2.3 is
 **GPL-3.0**. Choosing MIT for this adapter does not relicense `win_http` or remove
 its distribution conditions. The adapter implementation does not vendor upstream adapter code. See the dependency packages for their license texts.
+
+The Linux backend vendors rhttp 0.18.0 under its upstream MIT license; see
+[third_party/rhttp](third_party/rhttp/README.md). Import settings and `Rhttp`
+from this adapter package. Types from a separate `package:rhttp` installation
+are independent and cannot configure this bundled backend.

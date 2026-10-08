@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
-import 'package:rhttp/rhttp.dart';
+import 'package:native_dio_adapter_desktop/src/rhttp/rhttp.dart';
 import 'package:win_http/win_http.dart';
 
 import 'rhttp_adapter.dart';

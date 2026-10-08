@@ -1,3 +1,10 @@
+## 0.2.0
+
+* Build and bundle Rust only on Linux; Windows uses system WinHTTP.
+* Vendor the matched rhttp 0.18.0 Dart/Rust backend and preserve MIT notices.
+* Re-export Rhttp for explicit initialization of the bundled backend.
+* Import Linux settings from this package; separate upstream rhttp types differ.
+
 ## 0.1.0
 
 - Add `NativeDesktopAdapter`, selecting WinHTTP on Windows and rhttp on Linux.

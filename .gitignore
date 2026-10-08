@@ -7,3 +7,5 @@ pubspec.lock
 *.iml
 .idea/
 .vscode/
+*.dill
+third_party/**/bin/build_tool_runner.dart

@@ -1,6 +1,6 @@
 name: native_dio_adapter_desktop
 description: Native Dio transports for Windows (WinHTTP) and Linux (Rust reqwest), with configurable proxies.
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/umeow0716/native_dio_adapter_desktop
 environment:
   sdk: ^3.9.0
@@ -13,9 +13,18 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.5.0
-  rhttp: ^0.18.0
+  flutter_rust_bridge: 2.12.0
+  freezed_annotation: ^3.0.0
+  http_profile: ^0.1.0
+  meta: ^1.12.0
   win_http: ^0.2.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
   lints: ^6.0.0
+
+flutter:
+  plugin:
+    platforms:
+      linux:
+        ffiPlugin: true

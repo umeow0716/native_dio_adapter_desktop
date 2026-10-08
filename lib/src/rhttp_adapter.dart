@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
-import 'package:rhttp/rhttp.dart' as rhttp;
+import 'package:native_dio_adapter_desktop/src/rhttp/rhttp.dart' as rhttp;
 
 import 'conversion_layer_adapter.dart';
 

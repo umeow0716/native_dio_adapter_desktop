@@ -51,6 +51,7 @@ jobs:
       - name: Trust Flutter SDK ownership inside container
         run: git config --global --add safe.directory "$FLUTTER_ROOT"
       - run: flutter pub get
+      - run: python3 scripts/check_native_platforms.py example/.flutter-plugins-dependencies
       - run: dart format --output=none --set-exit-if-changed lib test example/lib
       - run: flutter analyze
       - run: flutter test
@@ -65,18 +66,23 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
-      # rhttp is a transitive native plugin even when the Windows adapter uses
-      # WinHTTP, so its Rust library must also be built for the example app.
-      - uses: dtolnay/rust-toolchain@stable
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.47.6'
       - run: flutter pub get
+      - run: python scripts/check_native_platforms.py example/.flutter-plugins-dependencies
       - run: flutter analyze
       - run: flutter test
       - name: Build native example
         working-directory: example
         run: flutter build windows --release
+      - name: Verify Rust is absent from the Windows bundle
+        working-directory: example
+        shell: pwsh
+        run: |
+          if (Get-ChildItem build/windows/x64/runner/Release -Recurse -Filter '*rhttp*') {
+            throw 'Windows bundle contains an unexpected Rust backend.'
+          }
       - name: Native HTTP, TLS and proxy smoke tests
         working-directory: example
         shell: pwsh
