@@ -1,0 +1,74 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  linux:
+    name: Ubuntu 22.04 / ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-22.04
+            arch: x64
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
+    container: ubuntu:22.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Install build and desktop dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl git jq unzip xz-utils clang cmake ninja-build pkg-config libgtk-3-dev libgl1-mesa-dri libegl1 libgles2 xvfb xauth
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup.sh
+          sh /tmp/rustup.sh -y --profile minimal
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+          architecture: ${{ matrix.arch }}
+      - run: flutter pub get
+      - run: dart format --output=none --set-exit-if-changed lib test example/lib
+      - run: flutter analyze
+      - run: flutter test
+      - name: Build native example
+        working-directory: example
+        run: flutter build linux --release
+      - name: Native HTTP, TLS and proxy smoke tests
+        working-directory: example
+        run: xvfb-run -a build/linux/${{ matrix.arch }}/release/bundle/native_desktop_example --smoke-test
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      # rhttp is a transitive native plugin even when the Windows adapter uses
+      # WinHTTP, so its Rust library must also be built for the example app.
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.47.6'
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+      - name: Build native example
+        working-directory: example
+        run: flutter build windows --release
+      - name: Native HTTP, TLS and proxy smoke tests
+        working-directory: example
+        shell: pwsh
+        run: |
+          $process = Start-Process -FilePath 'build/windows/x64/runner/Release/native_desktop_example.exe' -ArgumentList '--smoke-test' -Wait -PassThru -RedirectStandardOutput 'smoke.stdout.log' -RedirectStandardError 'smoke.stderr.log'
+          Get-Content 'smoke.stdout.log'
+          Get-Content 'smoke.stderr.log'
+          if ($process.ExitCode -ne 0) { throw "Smoke tests failed: $($process.ExitCode)" }

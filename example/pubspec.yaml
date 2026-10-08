@@ -1,0 +1,17 @@
+name: native_desktop_example
+description: Native desktop Dio example and transport smoke tests.
+publish_to: none
+version: 1.0.0+1
+environment:
+  sdk: ^3.9.0
+  flutter: '>=3.35.0'
+dependencies:
+  flutter:
+    sdk: flutter
+  dio: ^5.9.0
+  native_dio_adapter_desktop:
+    path: ../
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.0.0
